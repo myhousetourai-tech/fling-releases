@@ -1,0 +1,5 @@
+{
+  "mac":     { "version": "0.5.0", "url": "https://github.com/myhousetourai-tech/fling-releases/releases/latest/download/Fling-mac.zip" },
+  "android": { "version": "0.5.0", "url": "https://github.com/myhousetourai-tech/fling-releases/releases/latest/download/Fling-android.apk" },
+  "windows": { "version": "",      "url": "" }
+}

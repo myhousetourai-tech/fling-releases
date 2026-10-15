@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Fling</title>
+<meta name="description" content="Throw photos, videos and files between your devices in one motion.">
+<style>
+  :root { --canvas:#f2f2f2; --ink:#111; --text:#111; --secondary:#6b6b6b; --chip:#e9e9e9; --panel:#fff; --hair:#e4e4e4; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--canvas); color:var(--text); font-family:-apple-system,BlinkMacSystemFont,"Inter","Segoe UI",Roboto,sans-serif; -webkit-font-smoothing:antialiased; }
+  main { max-width:520px; margin:0 auto; padding:56px 20px 64px; }
+  h1 { font-size:44px; letter-spacing:-1px; margin:0 0 10px; }
+  p.lead { font-size:17px; color:var(--secondary); margin:0 0 28px; line-height:1.4; }
+  .panel { background:var(--panel); border-radius:26px; padding:18px; box-shadow:0 14px 40px rgba(0,0,0,.08); margin-bottom:14px; }
+  .row { display:flex; align-items:center; gap:14px; padding:10px 4px; }
+  .row + .row { border-top:1px solid var(--hair); }
+  .icon { width:44px; height:44px; border-radius:12px; background:var(--chip); display:grid; place-items:center; font-size:20px; flex:none; }
+  .name { font-weight:600; font-size:16px; }
+  .sub { color:var(--secondary); font-size:13px; }
+  .grow { flex:1; min-width:0; }
+  a.pill { display:inline-block; background:var(--ink); color:#fff; text-decoration:none; border-radius:999px; padding:10px 18px; font-weight:600; font-size:14px; white-space:nowrap; }
+  a.pill.big { padding:16px 26px; font-size:17px; width:100%; text-align:center; }
+  a.small { color:var(--secondary); font-size:13px; text-decoration:none; border-bottom:1px solid var(--hair); }
+  .muted { color:var(--secondary); font-size:13px; line-height:1.45; }
+  details summary { cursor:pointer; color:var(--secondary); font-size:13px; }
+  code { background:var(--chip); border-radius:6px; padding:1px 6px; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Fling</h1>
+  <p class="lead">Throw a photo, a video or a file off the edge of one screen and it lands on the other. Your own Wi‑Fi, end‑to‑end encrypted, nothing in the cloud.</p>
+
+  <div class="panel" id="primary">
+    <div class="row">
+      <div class="icon" id="p-icon">⬇︎</div>
+      <div class="grow"><div class="name" id="p-name">Detecting your device…</div><div class="sub" id="p-sub"></div></div>
+    </div>
+    <div style="padding:8px 4px 2px"><a class="pill big" id="p-link" href="#">Download</a></div>
+    <div class="muted" id="p-note" style="padding:10px 4px 0"></div>
+  </div>
+
+  <div class="panel">
+    <div class="row"><div class="icon">💻</div><div class="grow"><div class="name">Mac</div><div class="sub">macOS 14 or later</div></div><a class="pill" href="https://github.com/myhousetourai-tech/fling-releases/releases/latest/download/Fling-mac.zip">Download</a></div>
+    <div class="row"><div class="icon">📱</div><div class="grow"><div class="name">Android</div><div class="sub">Android 13 or later · APK</div></div><a class="pill" href="https://github.com/myhousetourai-tech/fling-releases/releases/latest/download/Fling-android.apk">Download</a></div>
+    <div class="row"><div class="icon">🖥️</div><div class="grow"><div class="name">Windows</div><div class="sub" id="win-sub">Coming soon</div></div><a class="pill" id="win-link" href="#" style="opacity:.35;pointer-events:none">Download</a></div>
+    <div class="row"><div class="icon">📲</div><div class="grow"><div class="name">iPhone</div><div class="sub">Not yet</div></div></div>
+  </div>
+
+  <details class="panel"><summary>First‑time notes</summary>
+    <p class="muted"><b>Mac:</b> unzip, drag Fling to Applications, open it. macOS will say it can’t check the developer the first time: go to System Settings → Privacy &amp; Security and click <b>Open Anyway</b>. Once.</p>
+    <p class="muted"><b>Android:</b> open the downloaded APK. Allow “install from this source” once, then Install. Fling asks for its few permissions on first launch.</p>
+    <p class="muted"><b>Windows:</b> run the installer; on the “Windows protected your PC” screen click <b>More info → Run anyway</b>. Once.</p>
+    <p class="muted"><b>Pairing:</b> open Fling on both devices on the same Wi‑Fi. One shows a 6‑digit code, you type it on the other. After that they find each other on their own.</p>
+  </details>
+  <p class="muted">Updates: each app tells you when a newer version is here and installs it with one tap.</p>
+</main>
+<script>
+(async function () {
+  const ua = navigator.userAgent, plat = (navigator.userAgentData && navigator.userAgentData.platform) || navigator.platform || "";
+  const isAndroid = /Android/i.test(ua);
+  const isIOS = /iPhone|iPad|iPod/i.test(ua) || (plat === "MacIntel" && navigator.maxTouchPoints > 1);
+  const isMac = !isIOS && /Mac/i.test(plat + ua);
+  const isWin = /Win/i.test(plat + ua);
+  let latest = {};
+  try { latest = await (await fetch("latest.json", { cache: "no-store" })).json(); } catch (e) {}
+  const el = id => document.getElementById(id);
+  function show(icon, name, sub, href, note) { el("p-icon").textContent = icon; el("p-name").textContent = name; el("p-sub").textContent = sub; el("p-link").href = href; el("p-note").textContent = note; }
+  if (isAndroid) show("📱", "Fling for Android", "Version " + ((latest.android||{}).version || "") , (latest.android||{}).url || "#", "Open the file when it finishes downloading, allow “install from this source” once, then Install.");
+  else if (isIOS) { show("📲", "Fling for iPhone", "Not available yet", "#", "iPhone is coming later. Grab the Mac or Android version from the list below for your other devices."); el("p-link").style.opacity=.35; el("p-link").style.pointerEvents="none"; }
+  else if (isMac) show("💻", "Fling for Mac", "Version " + ((latest.mac||{}).version || ""), (latest.mac||{}).url || "#", "Unzip, drag Fling to Applications, open it. The first time, macOS will ask you to confirm under Privacy & Security → Open Anyway.");
+  else if (isWin && (latest.windows||{}).url) show("🖥️", "Fling for Windows", "Version " + latest.windows.version, latest.windows.url, "Run the installer. On the “Windows protected your PC” screen click More info → Run anyway, once.");
+  else if (isWin) { show("🖥️", "Fling for Windows", "Coming soon", "#", "The Windows version is on its way. Mac and Android are ready below."); el("p-link").style.opacity=.35; el("p-link").style.pointerEvents="none"; }
+  else show("⬇︎", "Fling", "Pick your device below", "#", "");
+  if ((latest.windows||{}).url) { el("win-sub").textContent = "Version " + latest.windows.version; const w = el("win-link"); w.href = latest.windows.url; w.style.opacity = 1; w.style.pointerEvents = "auto"; }
+})();
+</script>
+</body>
+</html>
